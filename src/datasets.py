@@ -8,7 +8,7 @@ VALID_DIR = '../input/validation'
 IMAGE_SIZE = 224 # Image size of resize when applying transforms.
 BATCH_SIZE = 32 
 NUM_WORKERS = 4 # Number of parallel processes for data preparation.
-
+CLASSES = ('glioma', 'meningioma', 'notumor', 'pituitary')
 
 def get_transform(IMAGE_SIZE):
     train_transform = transforms.Compose([
