@@ -13,8 +13,9 @@ def define_model(trial):
     return Resnet50Model(in_channels=in_channels, num_classes=4)
 
 
-def objective(trial, device):
+def objective(trial):
     # Generate the model.
+    device = ('cuda' if torch.cuda.is_available() else 'cpu')
     model = define_model(trial).to(device)
 
     # Generate the optimizers.
@@ -27,14 +28,14 @@ def objective(trial, device):
     train_loader, valid_loader, _ = get_data_loaders(dataset_train, dataset_valid, dataset_test)
 
     batch_size = trial.suggest_categorical('batch_size', [16, 32, 64, 128])
-    epochs = 100
+    epochs = 10
     n_train_examples = batch_size * 30
     n_valid_examples = batch_size * 10
 
     # Training of the model.
-    for epoch in range(epochs):
+    for epoch in tqdm(range(epochs), total=epochs):
         model.train()
-        for batch_idx, (data, target) in tqdm(enumerate(train_loader), total=min(len(train_loader), n_train_examples)):
+        for batch_idx, (data, target) in enumerate(train_loader):
             # Limiting training data for faster epochs.
             if batch_idx * batch_size >= n_train_examples:
                 break
@@ -53,7 +54,7 @@ def objective(trial, device):
         model.eval()
         correct = 0
         with torch.no_grad():
-            for batch_idx, (data, target) in tqdm(enumerate(valid_loader), total=min(len(valid_loader), n_valid_examples)):
+            for batch_idx, (data, target) in enumerate(valid_loader):
                 # Limiting validation data.
                 if batch_idx * batch_size >= n_valid_examples:
                     break
