@@ -5,11 +5,11 @@ from tqdm import tqdm
 
 
 aug_list = AugmentationSequential(
-    K.RandomAffine(5, [0.1, 0.1], [0.6, 1], p=0.2),
-    K.RandomPerspective(0.5, p=0.1),
+    K.RandomAffine(5, [0.05, 0.05], [0.6, 1], p=0.1),
+    K.RandomPerspective(0.1, p=0.1),
     K.RandomHorizontalFlip(p=0.1),
     K.RandomVerticalFlip(p=0.1),
-    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.2),
+    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.1),
     K.RandomSharpness(p=0.1),
     same_on_batch=False,
 )

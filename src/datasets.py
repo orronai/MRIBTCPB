@@ -6,7 +6,6 @@ TRAIN_DIR = '../input/training'
 TEST_DIR = '../input/test'
 VALID_DIR = '../input/validation'
 IMAGE_SIZE = 224 # Image size of resize when applying transforms.
-BATCH_SIZE = 32 
 NUM_WORKERS = 2 # Number of parallel processes for data preparation.
 CLASSES = ('glioma', 'meningioma', 'notumor', 'pituitary')
 
@@ -37,7 +36,7 @@ def get_datasets():
     )
     return dataset_train, dataset_valid, dataset_test, dataset_train.classes
 
-def get_data_loaders(dataset_train, dataset_valid, dataset_test):
+def get_data_loaders(dataset_train, dataset_valid, dataset_test, batch_size=32):
     """
     Prepares the training and validation data loaders.
 
@@ -47,15 +46,15 @@ def get_data_loaders(dataset_train, dataset_valid, dataset_test):
     Returns the training and validation data loaders.
     """
     train_loader = DataLoader(
-        dataset_train, batch_size=BATCH_SIZE, 
+        dataset_train, batch_size=batch_size, 
         shuffle=True, num_workers=NUM_WORKERS,
     )
     valid_loader = DataLoader(
-        dataset_valid, batch_size=BATCH_SIZE, 
+        dataset_valid, batch_size=batch_size, 
         shuffle=True, num_workers=NUM_WORKERS,
     )
     test_loader = DataLoader(
-        dataset_test, batch_size=BATCH_SIZE, 
+        dataset_test, batch_size=batch_size, 
         shuffle=False, num_workers=NUM_WORKERS,
     )
     return train_loader, valid_loader, test_loader
