@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 
 aug_list = AugmentationSequential(
-    K.RandomAffine(5, [0.05, 0.05], [0.6, 1], p=0.1),
+    K.RandomAffine(5, [0.05, 0.05], [0.85, 1.05], p=0.1),
     K.RandomPerspective(0.1, p=0.1),
     K.RandomHorizontalFlip(p=0.1),
     K.RandomVerticalFlip(p=0.1),

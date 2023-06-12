@@ -55,7 +55,7 @@ def calculate_accuracy(model, dataloader, device):
     model.eval() # put in evaluation mode,  turn of DropOut, BatchNorm uses learned statistics
     total_correct = 0
     total_images = 0
-    confusion_matrix = np.zeros([10,10], int)
+    confusion_matrix = np.zeros([4, 4], int)
     with torch.no_grad():
         for data in dataloader:
             images, labels = data

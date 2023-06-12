@@ -6,13 +6,13 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 
 from datasets import get_datasets, get_data_loaders
-from model import Resnet50Model
+from model import ResPatchNet, EfficientPatchNet
+from train import aug_list
 
 
 def define_model(trial):
-    p = trial.suggest_float("drop_rate", 0.1, 0.5)
-    in_channels = trial.suggest_categorical('in_channels', [4, 16, 49])
-    return Resnet50Model(in_channels=in_channels, num_classes=4, drop_rate=p)
+    num_patches = trial.suggest_categorical('num_patches', [4, 16, 49])
+    return EfficientPatchNet(num_patches=num_patches, num_classes=4)
 
 
 def objective(trial):
@@ -28,7 +28,7 @@ def objective(trial):
 
     batch_size = trial.suggest_categorical('batch_size', [8, 16, 32])
     # Get dataset
-    dataset_train, dataset_valid, dataset_test, _ = get_datasets()
+    dataset_train, dataset_valid, dataset_test, _ = get_datasets(patch_input=False)
     train_loader, valid_loader, _ = get_data_loaders(
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
@@ -45,7 +45,7 @@ def objective(trial):
             if batch_idx * batch_size >= n_train_examples:
                 break
 
-            data = data.to(device)
+            data = aug_list(data).to(device)
             target = target.to(device)
 
             optimizer.zero_grad()

@@ -9,16 +9,23 @@ IMAGE_SIZE = 224 # Image size of resize when applying transforms.
 NUM_WORKERS = 2 # Number of parallel processes for data preparation.
 CLASSES = ('glioma', 'meningioma', 'notumor', 'pituitary')
 
-def get_transform(IMAGE_SIZE):
-    train_transform = transforms.Compose([
-        transforms.Grayscale(),
-        transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.17340052], std=[0.18875531]),
-    ])
+def get_transform(IMAGE_SIZE, patch_input=False):
+    if patch_input:
+        train_transform = transforms.Compose([
+            transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            transforms.Grayscale(),
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+        ])
     return train_transform
 
-def get_datasets():
+def get_datasets(patch_input=False):
     """
     Function to prepare the Datasets.
 
@@ -26,13 +33,13 @@ def get_datasets():
     with the class names.
     """
     dataset_train = datasets.ImageFolder(
-        TRAIN_DIR, transform=(get_transform(IMAGE_SIZE)),
+        TRAIN_DIR, transform=(get_transform(IMAGE_SIZE, patch_input)),
     )
     dataset_valid = datasets.ImageFolder(
-        VALID_DIR, transform=(get_transform(IMAGE_SIZE)),
+        VALID_DIR, transform=(get_transform(IMAGE_SIZE, patch_input)),
     )
     dataset_test = datasets.ImageFolder(
-        TEST_DIR, transform=(get_transform(IMAGE_SIZE)),
+        TEST_DIR, transform=(get_transform(IMAGE_SIZE, patch_input)),
     )
     return dataset_train, dataset_valid, dataset_test, dataset_train.classes
 
