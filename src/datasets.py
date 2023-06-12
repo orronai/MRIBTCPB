@@ -2,9 +2,9 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
 # Required constants.
-TRAIN_DIR = '../input/training'
-TEST_DIR = '../input/test'
-VALID_DIR = '../input/validation'
+TRAIN_DIR = 'MRIBTCPB/input/training'
+TEST_DIR = 'MRIBTCPB/input/test'
+VALID_DIR = 'MRIBTCPB/input/validation'
 IMAGE_SIZE = 224 # Image size of resize when applying transforms.
 NUM_WORKERS = 2 # Number of parallel processes for data preparation.
 CLASSES = ('glioma', 'meningioma', 'notumor', 'pituitary')

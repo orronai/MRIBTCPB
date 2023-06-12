@@ -10,9 +10,9 @@ from kornia.augmentation import AugmentationSequential
 from sklearn.metrics import ConfusionMatrixDisplay
 from tqdm import tqdm
 
-from datasets import CLASSES, get_datasets, get_data_loaders
-from model import PatchNet
-from utils import calculate_accuracy, save_model, save_plots
+from MRIBTCPB.src.datasets import CLASSES, get_datasets, get_data_loaders
+from MRIBTCPB.src.model import PatchNet
+from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
 
 
 aug_list = AugmentationSequential(
@@ -28,7 +28,7 @@ aug_list = AugmentationSequential(
 )
 
 # Training function.
-def train(model, train_loader, optimizer, criterion, device):
+def train(model, train_loader, optimizer, criterion, device, augmentation):
     model.train()
     print('\nTraining')
     train_running_loss = 0.0
@@ -37,7 +37,7 @@ def train(model, train_loader, optimizer, criterion, device):
     for _, data in tqdm(enumerate(train_loader), total=len(train_loader)):
         counter += 1
         image, labels = data
-        image = aug_list(image).to(device)
+        image = aug_list(image).to(device) if augmentation else image.to(device)
         labels = labels.to(device)
         optimizer.zero_grad()
         # Forward pass.
@@ -86,7 +86,7 @@ def validate(model, valid_loader, criterion, device):
     return epoch_loss, epoch_acc
 
 # Train Model.
-def train_model(model_name, epochs, optimizer_name, batch_size, lr, num_patches):
+def train_model(model_name, augmentation, optimizer_name, batch_size, lr, num_patches):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -96,9 +96,7 @@ def train_model(model_name, epochs, optimizer_name, batch_size, lr, num_patches)
     train_loader, valid_loader, test_loader = get_data_loaders(
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
-
-    # Learning_parameters
-    epochs = 100  # Hyperparameter
+    epochs = 50
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}")
     print(f"Learning rate: {lr}")
@@ -129,7 +127,7 @@ def train_model(model_name, epochs, optimizer_name, batch_size, lr, num_patches)
     for epoch in range(epochs):
         print(f"[INFO]: Epoch {epoch+1} of {epochs}")
         train_epoch_loss, train_epoch_acc = train(
-            model, train_loader,optimizer, criterion, device,
+            model, train_loader,optimizer, criterion, device, augmentation,
         )
         valid_epoch_loss, valid_epoch_acc = validate(
             model, valid_loader, criterion, device,

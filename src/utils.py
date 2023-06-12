@@ -14,7 +14,7 @@ def save_model(epochs, model, model_name, optimizer, criterion):
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': criterion,
-                }, f"../outputs/model_{model_name}.pth")
+                }, f"MRIBTCPB/outputs/model_{model_name}.pth")
 
 def save_plots(model_name, train_acc, valid_acc, train_loss, valid_loss):
     """
@@ -24,31 +24,31 @@ def save_plots(model_name, train_acc, valid_acc, train_loss, valid_loss):
     plt.figure(figsize=(10, 7))
     plt.plot(
         train_acc, color='green', linestyle='-', 
-        label='train accuracy'
+        label='Train Accuracy'
     )
     plt.plot(
         valid_acc, color='blue', linestyle='-', 
-        label='validataion accuracy'
+        label='Validataion Accuracy'
     )
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.savefig(f"../outputs/accuracy_{model_name}.png")
+    plt.savefig(f"MRIBTCPB/outputs/accuracy_{model_name}.png")
     
     # loss plots
     plt.figure(figsize=(10, 7))
     plt.plot(
         train_loss, color='orange', linestyle='-', 
-        label='train loss'
+        label='Train Loss'
     )
     plt.plot(
         valid_loss, color='red', linestyle='-', 
-        label='validataion loss'
+        label='Validataion Loss'
     )
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig(f"../outputs/loss_{model_name}.png")
+    plt.savefig(f"MRIBTCPB/outputs/loss_{model_name}.png")
 
 # function to calculate accuracy of the model
 def calculate_accuracy(model, dataloader, device):

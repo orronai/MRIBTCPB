@@ -1,13 +1,13 @@
 import optuna
 import torch
-from torch import optim
 import torch.nn.functional as F
+from torch import optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from tqdm import tqdm
 
-from datasets import get_datasets, get_data_loaders
-from model import PatchNet
-from train import aug_list
+from MRIBTCPB.src.datasets import get_datasets, get_data_loaders
+from MRIBTCPB.src.model import PatchNet
+from MRIBTCPB.src.train import aug_list
 
 
 def define_model(trial, model_name):
@@ -28,7 +28,7 @@ def objective(trial, model_name):
 
     batch_size = trial.suggest_categorical('batch_size', [8, 16, 32])
     # Get dataset
-    dataset_train, dataset_valid, dataset_test, _ = get_datasets(patch_input=False)
+    dataset_train, dataset_valid, dataset_test, _ = get_datasets()
     train_loader, valid_loader, _ = get_data_loaders(
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
