@@ -145,9 +145,9 @@ def train_model(model_name, augmentation, optimizer, batch_size, lr, num_patches
         scheduler.step()
 
     # Save the trained model weights.
-    save_model(epochs, model, optimizer, criterion)
+    save_model(epochs, model, optimizer, criterion, augmentation)
     # Save the loss and accuracy plots.
-    save_plots(train_acc, valid_acc, train_loss, valid_loss)
+    save_plots(train_acc, valid_acc, train_loss, valid_loss, augmentation)
     print('TRAINING COMPLETE')
 
     test_accuracy, confusion_matrix = calculate_accuracy(model, test_loader, device)
