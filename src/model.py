@@ -33,10 +33,10 @@ class PatchNet(nn.Module):
             param.requires_grad = False
 
         # Calculate the output feature size of the base model
-        if model_name == self.resnet_models:
+        if model_name == self.resnet_model:
             base_features = self.base_model.fc.in_features
             self.base_model.fc = nn.Identity()
-        elif model_name == self.densenet_models:
+        elif model_name == self.densenet_model:
             base_features = self.base_model.classifier.in_features
             self.base_model.classifier = nn.Identity()
         else:
@@ -56,9 +56,9 @@ class PatchNet(nn.Module):
         patches = patches.contiguous().view(-1, 3, self.patch_size, self.patch_size)
 
         # Pass the patches through the base model
-        if self.model_name in self.resnet_models + self.densenet_models:
+        if self.model_name == self.resnet_model or self.model_name == self.densenet_model:
             patch_features = self.base_model(patches)
-        else:
+        else:  # EfficientNet
             patch_features = self.base_model.extract_features(patches)
             patch_features = self.base_model._avg_pooling(patch_features)
         patch_features = patch_features.view(batch_size, self.num_patches, -1)
