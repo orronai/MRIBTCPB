@@ -20,10 +20,12 @@ aug_list = AugmentationSequential(
     K.RandomPerspective(0.1, p=0.1),
     # K.RandomHorizontalFlip(p=0.1),
     # K.RandomVerticalFlip(p=0.1),
-    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.1),
+    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.05),
     K.RandomSharpness(p=0.1),
     K.RandomBrightness(p=0.1, brightness=(0.9, 1.1)),
     K.RandomContrast(p=0.1, contrast=(0.95, 1.05)),
+    K.RandomElasticTransform(p=0.1),
+    K.RandomMotionBlur(kernel_size=3, angle=35, direction=0.5, resample='bilinear', p=0.15),
     same_on_batch=False,
 )
 
@@ -86,7 +88,7 @@ def validate(model, valid_loader, criterion, device):
     return epoch_loss, epoch_acc
 
 # Train Model.
-def train_model(model_name, augmentation, optimizer_name, batch_size, lr, num_patches):
+def train_model(model_name, augmentation, optimizer, batch_size, lr, num_patches):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -113,7 +115,7 @@ def train_model(model_name, augmentation, optimizer_name, batch_size, lr, num_pa
     print(f"{total_trainable_params:,} training parameters.")
 
     # Optimizer.
-    optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
+    optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
     # Scheduler
     scheduler = CosineAnnealingLR(optimizer, epochs, verbose=True)
     # scheduler = MultiStepLR(optimizer, milestones=[5, 10, 15, 20], gamma=0.1)
