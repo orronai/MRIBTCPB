@@ -115,7 +115,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     # Optimizer.
     optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
     # Scheduler
-    scheduler = StepLR(optimizer, 10, 0.2, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
+    scheduler = StepLR(optimizer, 10, 0.1, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
     # Loss function.
     criterion = nn.CrossEntropyLoss()
 
