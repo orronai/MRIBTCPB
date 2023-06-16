@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 from torchvision.models import (
@@ -46,8 +47,10 @@ class ByolNet:
 
 
 class ClassifierByolNet(nn.Module):
-    def __init__(self, base_encoder, num_classes):
+    def __init__(self, base_encoder, num_classes, num_patches):
         super(ClassifierByolNet, self).__init__()
+        self.num_patches = num_patches
+        self.patch_size = int(IMAGE_SIZE // np.sqrt(num_patches))
         self.features = nn.Sequential(*list(base_encoder.children())[:-1])
         for param in self.features.parameters():
                 param.requires_grad = False
