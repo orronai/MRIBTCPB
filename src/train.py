@@ -17,12 +17,12 @@ from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
 
 
 aug_list = AugmentationSequential(
-    K.RandomAffine(5, [0.2, 0.2], [0.7, 1], p=0.2),
+    K.RandomAffine(5, [0.05, 0.05], [0.75, 1.05], p=0.1),
     K.RandomPerspective(0.1, p=0.1),
-    K.RandomHorizontalFlip(p=0.2),
-    K.RandomVerticalFlip(p=0.2),
-    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 1), p=0.3),
-    K.RandomSharpness(p=0.2),
+    K.RandomHorizontalFlip(p=0.1),
+    K.RandomVerticalFlip(p=0.1),
+    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.0001, 0.5), p=0.4),
+    K.RandomSharpness(p=0.1),
     same_on_batch=False,
 )
 
@@ -85,7 +85,7 @@ def validate(model, valid_loader, criterion, device):
     return epoch_loss, epoch_acc
 
 # Train Model.
-def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, num_patches):
+def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, num_patches, fine_tune):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -101,7 +101,8 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     print(f"Learning rate: {lr}")
     print(f"Epochs to train for: {epochs}\n")
     model = PatchNet(
-        model_name=model_name, num_patches=num_patches, num_classes=4,
+        model_name=model_name, num_patches=num_patches,
+        num_classes=4, fine_tune=fine_tune,
     ).to(device)
 
     # Total parameters and trainable parameters.
@@ -137,7 +138,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
         print(f"Training loss: {train_epoch_loss:.3f}, training acc: {train_epoch_acc:.3f}")
         print(f"Validation loss: {valid_epoch_loss:.3f}, validation acc: {valid_epoch_acc:.3f}")
         print('-' * 50)
-        time.sleep(5)
+        time.sleep(0.5)
         scheduler.step()
 
     # Save the trained model weights.
@@ -278,7 +279,7 @@ def train_byol(model, batch_size, optimizer, scheduler, lr):
         print(f"Training loss: {train_epoch_loss:.3f}, training acc: {train_epoch_acc:.3f}")
         print(f"Validation loss: {valid_epoch_loss:.3f}, validation acc: {valid_epoch_acc:.3f}")
         print('-' * 50)
-        time.sleep(5)
+        time.sleep(0.5)
 
     # Save the trained model weights.
     save_model(epochs, model, 'byol', optimizer, criterion, True)

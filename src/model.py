@@ -13,7 +13,7 @@ class PatchNet(nn.Module):
     efficient_model = 'efficientnet-b4'
     densenet_model = 'densenet201'
 
-    def __init__(self, model_name, num_patches, num_classes=4):
+    def __init__(self, model_name, num_patches, num_classes=4, fine_tune=False):
         super(PatchNet, self).__init__()
         self.model_name = model_name
         self.num_patches = num_patches
@@ -28,9 +28,12 @@ class PatchNet(nn.Module):
         else:
             raise NameError('No Model Found')
 
-        # Disable gradient computation for the base model
-        for param in self.base_model.parameters():
-            param.requires_grad = False
+        if fine_tune:
+            for param in self.base_model.parameters():
+                param.requires_grad = True
+        else:
+            for param in self.base_model.parameters():
+                param.requires_grad = False
 
         # Calculate the output feature size of the base model
         if model_name == self.resnet_model:

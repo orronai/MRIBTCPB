@@ -10,15 +10,18 @@ from MRIBTCPB.src.model import PatchNet
 from MRIBTCPB.src.train import aug_list
 
 
-def define_model(trial, model_name):
+def define_model(trial, model_name, fine_tune):
     num_patches = trial.suggest_categorical('num_patches', [4, 16, 49])
-    return PatchNet(model_name=model_name, num_patches=num_patches, num_classes=4)
+    return PatchNet(
+        model_name=model_name, num_patches=num_patches,
+        num_classes=4, fine_tune=fine_tune,
+    )
 
 
-def objective(trial, model_name):
+def objective(trial, model_name, fine_tune):
     # Generate the model.
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
-    model = define_model(trial, model_name).to(device)
+    model = define_model(trial, model_name, fine_tune).to(device)
 
     # Generate the optimizers.
     lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)  # log=True, will use log scale to interplolate between lr
@@ -83,14 +86,14 @@ def objective(trial, model_name):
 
     return accuracy
 
-def run_experiments(model_name: str):
+def run_experiments(model_name: str, fine_tune: bool = False):
     # now we can run the experiment
     sampler = optuna.samplers.TPESampler()
     study = optuna.create_study(
         study_name='patch-mri-classification', direction='maximize', sampler=sampler,
     )
     study.optimize(
-        lambda trial: objective(trial, model_name=model_name), n_trials=50, timeout=4800,
+        lambda trial: objective(trial, model_name=model_name, fine_tune=fine_tune), n_trials=50, timeout=4800,
     )
 
     pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]
