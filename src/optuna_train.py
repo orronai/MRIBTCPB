@@ -25,7 +25,7 @@ def objective(trial, model_name):
     optimizer_name = trial.suggest_categorical('optimizer', ["Adam", "RMSprop", "SGD"])
     optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
     scheduler_name = trial.suggest_categorical('scheduler', ["StepLR", "CosineAnnealingLR"])
-    scheduler = StepLR(optimizer, 10, 0.2) if scheduler_name == "StepLR" else CosineAnnealingLR(optimizer, 50)
+    scheduler = StepLR(optimizer, 10, 0.2) if scheduler_name == "StepLR" else CosineAnnealingLR(optimizer, 30)
 
     batch_size = trial.suggest_categorical('batch_size', [8, 16, 32])
     # Get dataset

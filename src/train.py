@@ -16,13 +16,14 @@ from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
 
 
 aug_list = AugmentationSequential(
-    K.RandomAffine(5, [0.2, 0.2], [0.85, 1.05], p=0.1),
+    K.RandomAffine(5, [0.2, 0.2], [0.7, 1], p=0.1),
     K.RandomPerspective(0.1, p=0.1),
-    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.1),
-    K.RandomSharpness(p=0.05),
-    K.RandomBrightness(p=0.05, brightness=(0.9, 1.1)),
+    K.RandomHorizontalFlip(p=0.1),
+    K.RandomVerticalFlip(p=0.1),
+    K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.2),
+    K.RandomSharpness(p=0.1),
+    K.RandomBrightness(p=0.05, brightness=(0.95, 1.05)),
     K.RandomContrast(p=0.05, contrast=(0.95, 1.05)),
-    K.RandomElasticTransform(p=0.005),
     same_on_batch=False,
 )
 
@@ -95,7 +96,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     train_loader, valid_loader, test_loader = get_data_loaders(
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
-    epochs = 50
+    epochs = 30
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}")
     print(f"Learning rate: {lr}")
@@ -114,7 +115,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     # Optimizer.
     optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
     # Scheduler
-    scheduler = StepLR(optimizer, 10, 0.2, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, 50, verbose=True)
+    scheduler = StepLR(optimizer, 10, 0.2, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
     # Loss function.
     criterion = nn.CrossEntropyLoss()
 
