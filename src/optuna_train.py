@@ -2,7 +2,7 @@ import optuna
 import torch
 import torch.nn.functional as F
 from torch import optim
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
 from tqdm import tqdm
 
 from MRIBTCPB.src.datasets import get_datasets, get_data_loaders
@@ -24,7 +24,8 @@ def objective(trial, model_name):
     lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)  # log=True, will use log scale to interplolate between lr
     optimizer_name = trial.suggest_categorical('optimizer', ["Adam", "RMSprop", "SGD"])
     optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
-    scheduler = CosineAnnealingLR(optimizer, 100)
+    scheduler_name = trial.suggest_categorical('scheduler', ["StepLR", "CosineAnnealingLR"])
+    scheduler = StepLR(optimizer, 10, 0.2) if scheduler_name == "StepLR" else CosineAnnealingLR(optimizer, 50)
 
     batch_size = trial.suggest_categorical('batch_size', [8, 16, 32])
     # Get dataset
@@ -33,9 +34,9 @@ def objective(trial, model_name):
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
 
-    epochs = 10
-    n_train_examples = batch_size * 80
-    n_valid_examples = batch_size * 25
+    epochs = 15
+    n_train_examples = batch_size * 40
+    n_valid_examples = batch_size * 20
 
     # Training of the model.
     for epoch in tqdm(range(epochs), total=epochs):

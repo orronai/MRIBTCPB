@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
 from kornia import augmentation as K
 from kornia.augmentation import AugmentationSequential
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -88,7 +88,7 @@ def validate(model, valid_loader, criterion, device):
     return epoch_loss, epoch_acc
 
 # Train Model.
-def train_model(model_name, augmentation, optimizer, batch_size, lr, num_patches):
+def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, num_patches):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -117,8 +117,7 @@ def train_model(model_name, augmentation, optimizer, batch_size, lr, num_patches
     # Optimizer.
     optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
     # Scheduler
-    scheduler = CosineAnnealingLR(optimizer, epochs, verbose=True)
-    # scheduler = MultiStepLR(optimizer, milestones=[5, 10, 15, 20], gamma=0.1)
+    scheduler = StepLR(optimizer, 10, 0.2) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, 50)
     # Loss function.
     criterion = nn.CrossEntropyLoss()
 
