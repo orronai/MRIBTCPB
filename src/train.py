@@ -192,7 +192,7 @@ def train_byol(model, batch_size, optimizer, scheduler, lr):
     
     Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
     Byol.train_byol(device, train_loader, epochs=epochs)
-    classifier = ClassifierByolNet(model, num_classes=4)
+    classifier = ClassifierByolNet(Byol.model, num_classes=4)
     classifier = classifier.to(device)
     # Optimizer.
     optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)

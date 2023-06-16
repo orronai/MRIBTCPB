@@ -1,16 +1,31 @@
 import torch
 import torch.nn as nn
+from torchvision.models import (
+    densenet201, resnet50, DenseNet201_Weights, ResNet50_Weights,
+)
 from byol_pytorch import BYOL
+from efficientnet_pytorch import EfficientNet
 
 from MRIBTCPB.src.datasets import IMAGE_SIZE
 
 
 
 class ByolNet:
-    def __init__(self, model, augment_fn, augment_fn2):
+    def __init__(self, model_name, augment_fn, augment_fn2):
         super().__init__()
+        if model_name == 'resnet50':
+            self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
+            self.model.name = 'ResNet'
+        elif model_name == 'efficientnet-b4':
+            self.model = EfficientNet.from_pretrained('efficientnet-b4')
+            self.model.name = 'EfficientNet'
+        elif model_name == 'densenet201':
+            self.model = densenet201(weights=DenseNet201_Weights.DEFAULT)
+        else:
+            raise NameError('No Model Found')
+
         self.learner = BYOL(
-            model,
+            self.model,
             image_size = IMAGE_SIZE,
             hidden_layer = 'avgpool',
             moving_average_decay = 0.99,
