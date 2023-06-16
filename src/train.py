@@ -10,14 +10,14 @@ from kornia.augmentation import AugmentationSequential
 from sklearn.metrics import ConfusionMatrixDisplay
 from tqdm import tqdm
 
-from MRIBTCPB.src.byol import ByolNet, Classifier
+from MRIBTCPB.src.byol import ByolNet, ClassifierByolNet
 from MRIBTCPB.src.datasets import CLASSES, get_datasets, get_data_loaders
 from MRIBTCPB.src.model import PatchNet
 from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
 
 
 aug_list = AugmentationSequential(
-    K.RandomAffine(5, [0.05, 0.05], [0.75, 1.05], p=0.1),
+    K.RandomAffine(5, [0.1, 0.1], [0.75, 1.05], p=0.1),
     K.RandomPerspective(0.1, p=0.1),
     K.RandomHorizontalFlip(p=0.1),
     K.RandomVerticalFlip(p=0.1),
@@ -157,68 +157,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     cm_display.plot(cmap=plt.cm.Blues, values_format='.3f')
     plt.show()
 
-
-# Training function.
-def train_epoch_byol(model, classifier, train_loader, optimizer, criterion, device):
-    classifier.train()
-    print('\nTraining')
-    train_running_loss = 0.0
-    train_running_correct = 0
-    counter = 0
-    for _, data in tqdm(enumerate(train_loader), total=len(train_loader)):
-        counter += 1
-        image, labels = data
-        image = aug_list(image).to(device)
-        labels = labels.to(device)
-        optimizer.zero_grad()
-        # Forward pass.
-        outputs = model(image)
-        outputs = classifier(outputs)
-        # Calculate the loss.
-        loss = criterion(outputs, labels)
-        train_running_loss += loss.item()
-        # Calculate the accuracy.
-        _, preds = torch.max(outputs.data, 1)
-        train_running_correct += (preds == labels).sum().item()
-        # Backpropagation
-        loss.backward()
-        # Update the weights.
-        optimizer.step()
-
-    # Loss and accuracy for the complete epoch.
-    epoch_loss = train_running_loss / counter
-    epoch_acc = 100. * (train_running_correct / len(train_loader.dataset))
-    return epoch_loss, epoch_acc
-
-# Validation function.
-def validate_byol(model, classifier, valid_loader, criterion, device):
-    classifier.eval()
-    print('\nValidation')
-    valid_running_loss = 0.0
-    valid_running_correct = 0
-    counter = 0
-    with torch.no_grad():
-        for _, data in tqdm(enumerate(valid_loader), total=len(valid_loader)):
-            counter += 1
-            image, labels = data
-            image = image.to(device)
-            labels = labels.to(device)
-            # Forward pass.
-            outputs = model(image)
-            outputs = classifier(outputs)
-            # Calculate the loss.
-            loss = criterion(outputs, labels)
-            valid_running_loss += loss.item()
-            # Calculate the accuracy.
-            _, preds = torch.max(outputs.data, 1)
-            valid_running_correct += (preds == labels).sum().item()
-        
-    # Loss and accuracy for the complete epoch.
-    epoch_loss = valid_running_loss / counter
-    epoch_acc = 100. * (valid_running_correct / len(valid_loader.dataset))
-    return epoch_loss, epoch_acc
-
-
+# BYOL Train.
 def train_byol(model, batch_size, optimizer, scheduler, lr):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
@@ -252,9 +191,8 @@ def train_byol(model, batch_size, optimizer, scheduler, lr):
     )
     
     Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
-    Byol.train_byol(device, train_loader, epochs=30)
-    model.eval()
-    classifier = Classifier(model.fc.in_features, num_classes=4)
+    Byol.train_byol(device, train_loader, epochs=epochs)
+    classifier = ClassifierByolNet(model, num_classes=4)
     classifier = classifier.to(device)
     # Optimizer.
     optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
@@ -266,11 +204,11 @@ def train_byol(model, batch_size, optimizer, scheduler, lr):
     train_acc, valid_acc = [], []
     for epoch in range(epochs):
         print(f"[INFO]: Epoch {epoch+1} of {epochs}")
-        train_epoch_loss, train_epoch_acc = train_epoch_byol(
-            model, classifier, train_loader, optimizer, criterion, device,
+        train_epoch_loss, train_epoch_acc = train(
+            classifier, train_loader, optimizer, criterion, device, True,
         )
-        valid_epoch_loss, valid_epoch_acc = validate_byol(
-            model, classifier, valid_loader, criterion, device,
+        valid_epoch_loss, valid_epoch_acc = validate(
+            classifier, valid_loader, criterion, device,
         )
         train_loss.append(train_epoch_loss)
         valid_loss.append(valid_epoch_loss)
@@ -282,7 +220,7 @@ def train_byol(model, batch_size, optimizer, scheduler, lr):
         time.sleep(0.5)
 
     # Save the trained model weights.
-    save_model(epochs, model, 'byol', optimizer, criterion, True)
+    save_model(epochs, model, f'byol-{model}', optimizer, criterion, True)
     # Save the loss and accuracy plots.
     save_plots('byol', train_acc, valid_acc, train_loss, valid_loss, True)
     print('TRAINING COMPLETE')
