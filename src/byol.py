@@ -53,11 +53,11 @@ class ClassifierByolNet(nn.Module):
                 param.requires_grad = False
 
         if base_encoder.name == 'ResNet':
-            in_channels = self.base_model.fc.in_features
+            in_channels = base_encoder.fc.in_features
         elif base_encoder.name == 'DenseNet':
-            in_channels = self.base_model.classifier.in_features
+            in_channels = base_encoder.classifier.in_features
         else:  # EfficientNet
-            in_channels = self.base_model._fc.in_features
+            in_channels = base_encoder._fc.in_features
 
         self.linear_classifier = nn.Sequential(
             nn.BatchNorm1d(in_channels, affine=False),
