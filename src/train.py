@@ -18,14 +18,11 @@ from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
 aug_list = AugmentationSequential(
     K.RandomAffine(5, [0.2, 0.2], [0.85, 1.05], p=0.1),
     K.RandomPerspective(0.1, p=0.1),
-    # K.RandomHorizontalFlip(p=0.1),
-    # K.RandomVerticalFlip(p=0.1),
     K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 0.2), p=0.1),
     K.RandomSharpness(p=0.05),
     K.RandomBrightness(p=0.05, brightness=(0.9, 1.1)),
     K.RandomContrast(p=0.05, contrast=(0.95, 1.05)),
     K.RandomElasticTransform(p=0.005),
-    K.RandomMotionBlur(kernel_size=3, angle=35, direction=0.5, resample='bilinear', p=0.005),
     same_on_batch=False,
 )
 

@@ -34,9 +34,9 @@ def objective(trial, model_name):
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
 
-    epochs = 15
-    n_train_examples = batch_size * 40
-    n_valid_examples = batch_size * 20
+    epochs = 12
+    n_train_examples = batch_size * 30
+    n_valid_examples = batch_size * 10
 
     # Training of the model.
     for epoch in tqdm(range(epochs), total=epochs):
@@ -90,7 +90,7 @@ def run_experiments(model_name: str):
         study_name='patch-mri-classification', direction='maximize', sampler=sampler,
     )
     study.optimize(
-        lambda trial: objective(trial, model_name=model_name), n_trials=50, timeout=3600,
+        lambda trial: objective(trial, model_name=model_name), n_trials=50, timeout=4800,
     )
 
     pruned_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]
