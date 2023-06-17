@@ -63,8 +63,8 @@ class ClassifierByolNet(nn.Module):
             in_channels = base_encoder._fc.in_features
 
         self.linear_classifier = nn.Sequential(
-            nn.BatchNorm1d(in_channels, affine=False),
-            nn.Linear(in_channels, num_classes),
+            nn.BatchNorm1d(in_channels * self.num_patches, affine=False),
+            nn.Linear(in_channels * self.num_patches, num_classes),
         )
     
     def forward(self, x):
