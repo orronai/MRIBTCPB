@@ -184,7 +184,7 @@ def train_byol(model, batch_size, num_patches, optimizer, scheduler, lr):
 
     augment_fn2 = nn.Sequential(
         K.RandomHorizontalFlip(p=0.5),
-        K.GaussianBlur2d((3, 3), (1.5, 1.5)),
+        K.RandomGaussianBlur(kernel_size=(9, 5), sigma=(0.001, 1), p=0.5),
         K.RandomPerspective(0.3, p=0.5),
         K.RandomRotation(7, p=0.3),
         K.RandomContrast(p=0.2, contrast=(0.95, 1.05)),
