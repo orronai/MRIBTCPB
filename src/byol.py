@@ -17,19 +17,12 @@ class ByolNet:
         if model_name == 'resnet50':
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
             self.model.name = 'ResNet'
-        elif model_name == 'efficientnet-b4':
-            self.model = EfficientNet.from_pretrained('efficientnet-b4')
-            self.model.name = 'EfficientNet'
-        elif model_name == 'densenet201':
-            self.model = densenet201(weights=DenseNet201_Weights.DEFAULT)
-            self.model.name = 'DenseNet'
-        else:
             raise NameError('No Model Found')
 
         self.learner = BYOL(
             self.model,
             image_size = IMAGE_SIZE,
-            hidden_layer = -2,
+            hidden_layer = 'avgpool',
             moving_average_decay = 0.99,
             augment_fn = augment_fn,
             augment_fn2 = augment_fn2,
@@ -58,12 +51,7 @@ class ClassifierByolNet(nn.Module):
         for param in self.base_encoder.parameters():
                 param.requires_grad = False
 
-        if base_encoder.name == 'ResNet':
-            in_channels = base_encoder.fc.in_features
-        elif base_encoder.name == 'DenseNet':
-            in_channels = base_encoder.classifier.in_features
-        else:  # EfficientNet
-            in_channels = base_encoder._fc.in_features
+        in_channels = base_encoder.fc.in_features
 
         self.linear_classifier = nn.Sequential(
             nn.BatchNorm1d(in_channels * self.num_patches, affine=False),
