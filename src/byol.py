@@ -54,8 +54,8 @@ class ClassifierByolNet(nn.Module):
         super(ClassifierByolNet, self).__init__()
         self.num_patches = num_patches
         self.patch_size = int(IMAGE_SIZE // np.sqrt(num_patches))
-        self.features = nn.Sequential(*list(base_encoder.children())[:-1])
-        for param in self.features.parameters():
+        self.base_encoder = nn.Sequential(*list(base_encoder.children())[:-1])
+        for param in self.base_encoder.parameters():
                 param.requires_grad = False
 
         if base_encoder.name == 'ResNet':

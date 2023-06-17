@@ -169,7 +169,7 @@ def train_byol(model, batch_size, epochs=30):
     )
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}")
-    print(f"Training BYOL")
+    print(f"Training BYOL, with model: {model}")
     print(f"Epochs to train for: {epochs}\n")
 
     augment_fn = nn.Sequential(
