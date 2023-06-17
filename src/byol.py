@@ -38,6 +38,7 @@ class ByolNet:
     def train_byol(self, device, train_loader, epochs=20):
         opt = torch.optim.Adam(self.learner.parameters(), lr=3e-4)
         self.model.to(device)
+        self.learner.to(device)
         for _ in range(epochs):
             for _, (data, _) in enumerate(train_loader):
                 data = data.to(device)
