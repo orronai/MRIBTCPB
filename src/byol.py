@@ -12,16 +12,17 @@ from MRIBTCPB.src.datasets import IMAGE_SIZE
 
 
 class ByolNet:
-    def __init__(self, model_name, augment_fn, augment_fn2):
+    def __init__(self, model, augment_fn, augment_fn2):
         super().__init__()
-        if model_name == 'resnet50':
+        if model.name == 'resnet50':
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
             self.model.name = 'ResNet'
-        elif model_name == 'efficientnet-b4':
+        elif model.name == 'efficientnet-b4':
             self.model = EfficientNet.from_pretrained('efficientnet-b4')
             self.model.name = 'EfficientNet'
-        elif model_name == 'densenet201':
+        elif model.name == 'densenet201':
             self.model = densenet201(weights=DenseNet201_Weights.DEFAULT)
+            self.model.name = 'DenseNet'
         else:
             raise NameError('No Model Found')
 
