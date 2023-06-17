@@ -22,6 +22,7 @@ class ByolNet:
             self.model.name = 'EfficientNet'
         elif model_name == 'densenet201':
             self.model = densenet201(weights=DenseNet201_Weights.DEFAULT)
+            self.model.name = 'DenseNet'
         else:
             raise NameError('No Model Found')
 
