@@ -235,6 +235,7 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr):
         print(f"Validation loss: {valid_epoch_loss:.3f}, validation acc: {valid_epoch_acc:.3f}")
         print('-' * 50)
         time.sleep(0.5)
+        scheduler.step()
 
     # Save the trained model weights.
     save_model(epochs, classifier, f'byol-{Byol.model.name}', optimizer, criterion, True)
