@@ -29,7 +29,7 @@ class ByolNet:
         self.learner = BYOL(
             self.model,
             image_size = IMAGE_SIZE,
-            hidden_layer = 'avgpool' if model_name == 'resnet50' else '_avg_pooling',
+            hidden_layer = -2,
             moving_average_decay = 0.99,
             augment_fn = augment_fn,
             augment_fn2 = augment_fn2,
