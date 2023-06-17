@@ -158,20 +158,18 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     plt.show()
 
 # BYOL Train.
-def train_byol(model, batch_size, num_patches, optimizer, scheduler, lr):
+def train_byol(model, batch_size, epochs=30):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
-    print(f"[INFO]: Number of validation images: {len(dataset_valid)}")
     print(f"[INFO]: Class names: {dataset_classes}\n")
     # Load the training and validation data loaders.
-    train_loader, valid_loader, test_loader = get_data_loaders(
+    train_loader, _, _ = get_data_loaders(
         dataset_train, dataset_valid, dataset_test, batch_size,
     )
-    epochs = 30
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Computation device: {device}")
-    print(f"Learning rate: {lr}")
+    print(f"Training BYOL")
     print(f"Epochs to train for: {epochs}\n")
 
     augment_fn = nn.Sequential(
@@ -192,10 +190,29 @@ def train_byol(model, batch_size, num_patches, optimizer, scheduler, lr):
     
     Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
     Byol.train_byol(device, train_loader, epochs=epochs)
+    return Byol
+
+# Classifier Train.
+def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr):
+    # Load the training and validation datasets.
+    dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
+    print(f"[INFO]: Number of training images: {len(dataset_train)}")
+    print(f"[INFO]: Number of validation images: {len(dataset_valid)}")
+    print(f"[INFO]: Class names: {dataset_classes}\n")
+    # Load the training and validation data loaders.
+    train_loader, valid_loader, test_loader = get_data_loaders(
+        dataset_train, dataset_valid, dataset_test, batch_size,
+    )
+    epochs = 30
+    device = ('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Computation device: {device}")
+    print(f"Learning rate: {lr}")
+    print(f"Epochs to train for: {epochs}\n")
+
     classifier = ClassifierByolNet(Byol.model, num_classes=4, num_patches=num_patches)
     classifier = classifier.to(device)
     # Optimizer.
-    optimizer = getattr(optim, optimizer)(model.parameters(), lr=lr)
+    optimizer = getattr(optim, optimizer)(Byol.model.parameters(), lr=lr)
     # Scheduler
     scheduler = StepLR(optimizer, 10, 0.2, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
     criterion = nn.CrossEntropyLoss()
@@ -220,12 +237,12 @@ def train_byol(model, batch_size, num_patches, optimizer, scheduler, lr):
         time.sleep(0.5)
 
     # Save the trained model weights.
-    save_model(epochs, model, f'byol-{model}', optimizer, criterion, True)
+    save_model(epochs, classifier, f'byol-{Byol.model.name}', optimizer, criterion, True)
     # Save the loss and accuracy plots.
     save_plots('byol', train_acc, valid_acc, train_loss, valid_loss, True)
     print('TRAINING COMPLETE')
 
-    test_accuracy, confusion_matrix = calculate_accuracy(model, test_loader, device)
+    test_accuracy, confusion_matrix = calculate_accuracy(classifier, test_loader, device)
     print("test accuracy: {:.3f}%".format(test_accuracy))
 
     matplotlib.style.use('default')
