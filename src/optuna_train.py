@@ -18,17 +18,18 @@ def define_model(trial, model_name, fine_tune):
         num_classes=4, fine_tune=fine_tune,
     )
 
-def define_classifier(trial, base_encoder):
+def define_classifier(trial, base_encoder, fine_tune):
     num_patches = trial.suggest_categorical('num_patches', [1, 4, 16, 49])
     return ClassifierByolNet(
-        base_encoder=base_encoder, num_patches=num_patches, num_classes=4,
+        base_encoder=base_encoder, num_patches=num_patches,
+        num_classes=4, fine_tune=fine_tune,
     )
 
 def objective(trial, model, fine_tune, byol):
     # Generate the model.
     device = ('cuda' if torch.cuda.is_available() else 'cpu')
     if byol:
-        model = define_classifier(trial, model).to(device)
+        model = define_classifier(trial, model, fine_tune).to(device)
     else:
         model = define_model(trial, model, fine_tune).to(device)
 

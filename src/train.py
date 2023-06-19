@@ -193,7 +193,7 @@ def train_byol(model, batch_size, epochs=30):
     return Byol
 
 # Classifier Train.
-def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr):
+def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr, fine_tune=True):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -209,7 +209,9 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr):
     print(f"Learning rate: {lr}")
     print(f"Epochs to train for: {epochs}\n")
 
-    classifier = ClassifierByolNet(Byol.model, num_classes=4, num_patches=num_patches)
+    classifier = ClassifierByolNet(
+        Byol.model, num_classes=4, num_patches=num_patches, fine_tune=fine_tune,
+    )
     classifier = classifier.to(device)
     # Optimizer.
     optimizer = getattr(optim, optimizer)(Byol.model.parameters(), lr=lr)

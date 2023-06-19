@@ -17,6 +17,7 @@ class ByolNet:
         if model_name == 'resnet50':
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
             self.model.name = 'ResNet'
+        else:
             raise NameError('No Model Found')
 
         self.learner = BYOL(
@@ -43,12 +44,16 @@ class ByolNet:
 
 
 class ClassifierByolNet(nn.Module):
-    def __init__(self, base_encoder, num_classes, num_patches):
+    def __init__(self, base_encoder, num_classes, num_patches, fine_tune=False):
         super(ClassifierByolNet, self).__init__()
         self.num_patches = num_patches
         self.patch_size = int(IMAGE_SIZE // np.sqrt(num_patches))
         self.base_encoder = nn.Sequential(*list(base_encoder.children())[:-1])
-        for param in self.base_encoder.parameters():
+        if fine_tune:
+            for param in self.base_encoder.parameters():
+                param.requires_grad = True
+        else:
+            for param in self.base_encoder.parameters():
                 param.requires_grad = False
 
         in_channels = base_encoder.fc.in_features
