@@ -1,3 +1,4 @@
+from copy import deepcopy
 import optuna
 import torch
 import torch.nn.functional as F
@@ -21,7 +22,7 @@ def define_model(trial, model_name, fine_tune):
 def define_classifier(trial, base_encoder, fine_tune):
     num_patches = trial.suggest_categorical('num_patches', [1, 4, 16, 49])
     return ClassifierByolNet(
-        base_encoder=base_encoder, num_patches=num_patches,
+        base_encoder=deepcopy(base_encoder), num_patches=num_patches,
         num_classes=4, fine_tune=fine_tune,
     )
 

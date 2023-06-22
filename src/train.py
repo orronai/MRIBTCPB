@@ -1,3 +1,4 @@
+from copy import deepcopy
 import time
 import matplotlib
 import matplotlib.pyplot as plt
@@ -210,7 +211,7 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr, fi
     print(f"Epochs to train for: {epochs}\n")
 
     classifier = ClassifierByolNet(
-        Byol.model, num_classes=4, num_patches=num_patches, fine_tune=fine_tune,
+        deepcopy(Byol.model), num_classes=4, num_patches=num_patches, fine_tune=fine_tune,
     )
     classifier = classifier.to(device)
     # Optimizer.
