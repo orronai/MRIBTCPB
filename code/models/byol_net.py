@@ -36,6 +36,7 @@ class ByolNet:
         self.learner.to(device)
         for epoch in range(epochs):
             counter = 0
+            train_running_loss = 0.0
             for _, (data, _) in tqdm(enumerate(train_loader), total=len(train_loader)):
                 counter += 1
                 with torch.cuda.amp.autocast(enabled=use_amp):
