@@ -11,7 +11,7 @@ from MRIBTCPB.code.utils.datasets import IMAGE_SIZE
 
 
 class ByolNet:
-    def __init__(self, model_name, augment_fn, augment_fn2):
+    def __init__(self, model_name, augment_fn, augment_fn2, hidden_layer='avgpool'):
         super().__init__()
         if model_name == 'resnet50':
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
@@ -21,11 +21,11 @@ class ByolNet:
 
         self.learner = BYOL(
             self.model,
-            image_size = IMAGE_SIZE,
-            hidden_layer = 'avgpool',
-            moving_average_decay = 0.99,
-            augment_fn = augment_fn,
-            augment_fn2 = augment_fn2,
+            image_size=IMAGE_SIZE,
+            hidden_layer=hidden_layer,
+            moving_average_decay=0.99,
+            augment_fn=augment_fn,
+            augment_fn2=augment_fn2,
         )
 
     def train_byol(self, device, train_loader, epochs=20, use_amp=True):
