@@ -174,9 +174,10 @@ def train_byol(model, batch_size, epochs=30):
     print(f"Epochs to train for: {epochs}\n")
 
     augment_fn = nn.Sequential(
-        K.RandomAffine(5, [0.2, 0.2], [0.75, 1.05], p=0.2),
+        K.RandomAffine(5, [1, 1], [0.75, 1.05], p=0.5),
         K.RandomVerticalFlip(p=0.2),
         K.RandomGaussianBlur(kernel_size=(5, 9), sigma=(0.001, 1), p=0.5),
+        K.RandomGaussianNoise(mean=0, std=0.05, p=0.2),
         K.RandomSharpness(p=0.2),
         K.RandomBrightness(p=0.3, brightness=(0.95, 1.05)),
     )
@@ -184,9 +185,10 @@ def train_byol(model, batch_size, epochs=30):
     augment_fn2 = nn.Sequential(
         K.RandomHorizontalFlip(p=0.2),
         K.RandomGaussianBlur(kernel_size=(9, 5), sigma=(0.001, 1), p=0.5),
+        K.RandomGaussianNoise(mean=0, std=0.05, p=0.2),
         K.RandomPerspective(0.3, p=0.5),
         K.RandomRotation(7, p=0.3),
-        K.RandomContrast(p=0.3, contrast=(0.95, 1.05)),
+        K.RandomContrast(p=0.3, contrast=(0.9, 1.05)),
     )
     
     Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
@@ -215,7 +217,7 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr, fi
     )
     classifier = classifier.to(device)
     # Optimizer.
-    optimizer = getattr(optim, optimizer)(Byol.model.parameters(), lr=lr)
+    optimizer = getattr(optim, optimizer)(classifier.parameters(), lr=lr)
     # Scheduler
     scheduler = StepLR(optimizer, 10, 0.1, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
     criterion = nn.CrossEntropyLoss()
