@@ -37,7 +37,15 @@ def objective(trial, model, fine_tune, byol):
     # Generate the optimizers.
     lr = trial.suggest_float("lr", 1e-5, 1e-1, log=True)  # log=True, will use log scale to interplolate between lr
     optimizer_name = trial.suggest_categorical('optimizer', ["Adam", "RMSprop", "SGD"])
-    optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
+    if byol:
+        optimizer = getattr(optim, optimizer_name)(
+            [
+                {'params': model.base_encoder.parameters(), 'lr': lr / 10},
+                {'params': model.linear_classifier.parameters()},
+            ], lr=lr,
+        )
+    else:
+        optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
     scheduler_name = trial.suggest_categorical('scheduler', ["StepLR", "CosineAnnealingLR"])
     scheduler = StepLR(optimizer, 10, 0.1) if scheduler_name == "StepLR" else CosineAnnealingLR(optimizer, 30)
 
