@@ -1,14 +1,13 @@
 import numpy as np
 import torch
+import torch.quantization
 import torch.nn as nn
-from torchvision.models import (
-    densenet201, resnet50, DenseNet201_Weights, ResNet50_Weights,
-)
-from byol_pytorch import BYOL
-from efficientnet_pytorch import EfficientNet
+from torchvision.models import resnet50, ResNet50_Weights
+from torch.optim.lr_scheduler import StepLR
+from tqdm import tqdm
 
-from MRIBTCPB.src.datasets import IMAGE_SIZE
-
+from MRIBTCPB.code.models.byol import BYOL
+from MRIBTCPB.code.utils.datasets import IMAGE_SIZE
 
 
 class ByolNet:
@@ -29,18 +28,28 @@ class ByolNet:
             augment_fn2 = augment_fn2,
         )
 
-    def train_byol(self, device, train_loader, epochs=20):
+    def train_byol(self, device, train_loader, epochs=20, use_amp=True):
+        scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
         opt = torch.optim.Adam(self.learner.parameters(), lr=3e-4)
+        scheduler = StepLR(opt, 20, 0.1, verbose=True)
         self.model.to(device)
         self.learner.to(device)
-        for _ in range(epochs):
-            for _, (data, _) in enumerate(train_loader):
-                data = data.to(device)
-                loss = self.learner(data)
-                opt.zero_grad()
-                loss.backward()
-                opt.step()
+        for epoch in range(epochs):
+            counter = 0
+            for _, (data, _) in tqdm(enumerate(train_loader), total=len(train_loader)):
+                counter += 1
+                with torch.cuda.amp.autocast(enabled=use_amp):
+                    data = data.to(device)
+                    loss = self.learner(data)
+                opt.zero_grad(set_to_none=True)
+                train_running_loss += loss
+                scaler.scale(loss).backward()
+                scaler.step(opt)
+                scaler.update()
                 self.learner.update_moving_average()
+            epoch_loss = train_running_loss / counter
+            print(f'Epoch {epoch + 1} loss: {epoch_loss:.4f}')
+            scheduler.step()
 
 
 class ClassifierByolNet(nn.Module):

@@ -11,10 +11,10 @@ from kornia.augmentation import AugmentationSequential
 from sklearn.metrics import ConfusionMatrixDisplay
 from tqdm import tqdm
 
-from MRIBTCPB.src.byol import ByolNet, ClassifierByolNet
-from MRIBTCPB.src.datasets import CLASSES, get_datasets, get_data_loaders
-from MRIBTCPB.src.model import PatchNet
-from MRIBTCPB.src.utils import calculate_accuracy, save_model, save_plots
+from MRIBTCPB.code.models.byol_net import ByolNet, ClassifierByolNet
+from MRIBTCPB.code.utils.datasets import CLASSES, get_datasets, get_data_loaders
+from MRIBTCPB.code.models.model import PatchNet
+from MRIBTCPB.code.utils.utils import calculate_accuracy, save_model, save_plots
 
 
 aug_list = AugmentationSequential(

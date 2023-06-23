@@ -6,10 +6,10 @@ from torch import optim
 from torch.optim.lr_scheduler import CosineAnnealingLR, StepLR
 from tqdm import tqdm
 
-from MRIBTCPB.src.byol import ClassifierByolNet
-from MRIBTCPB.src.datasets import get_datasets, get_data_loaders
-from MRIBTCPB.src.model import PatchNet
-from MRIBTCPB.src.train import aug_list
+from MRIBTCPB.code.models.byol_net import ClassifierByolNet
+from MRIBTCPB.code.utils.datasets import get_datasets, get_data_loaders
+from MRIBTCPB.code.models.model import PatchNet
+from MRIBTCPB.code.train import aug_list
 
 
 def define_model(trial, model_name, fine_tune):

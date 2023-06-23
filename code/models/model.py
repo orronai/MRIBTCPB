@@ -5,7 +5,7 @@ from torchvision.models import (
 )
 from efficientnet_pytorch import EfficientNet
 
-from MRIBTCPB.src.datasets import IMAGE_SIZE
+from MRIBTCPB.code.utils.datasets import IMAGE_SIZE
 
 
 class PatchNet(nn.Module):
