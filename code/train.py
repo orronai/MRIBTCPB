@@ -159,7 +159,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     plt.show()
 
 # BYOL Train.
-def train_byol(model, batch_size, epochs=30, hidden_layer='avgpool'):
+def train_byol(model, batch_size, epochs=30):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -189,10 +189,7 @@ def train_byol(model, batch_size, epochs=30, hidden_layer='avgpool'):
         K.RandomContrast(p=0.3, contrast=(0.9, 1.1)),
     )
     
-    Byol = ByolNet(
-        model, augment_fn=augment_fn,
-        augment_fn2=augment_fn2, hidden_layer=hidden_layer,
-    )
+    Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
     Byol.train_byol(device, train_loader, epochs=epochs)
     return Byol
 
@@ -218,7 +215,12 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr, fi
     )
     classifier = classifier.to(device)
     # Optimizer.
-    optimizer = getattr(optim, optimizer)(classifier.parameters(), lr=lr)
+    optimizer = getattr(optim, optimizer)(
+        [
+            {'params': classifier.base_encoder.parameters(), 'lr': lr / 10},
+            {'params': classifier.linear_classifier.parameters()},
+        ], lr=lr,
+    )
     # Scheduler
     scheduler = StepLR(optimizer, 10, 0.1, verbose=True) if scheduler == "StepLR" else CosineAnnealingLR(optimizer, epochs, verbose=True)
     criterion = nn.CrossEntropyLoss()
