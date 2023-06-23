@@ -72,6 +72,9 @@ class ClassifierByolNet(nn.Module):
             nn.BatchNorm1d(in_channels * self.num_patches, affine=False),
             nn.Linear(in_channels * self.num_patches, num_classes),
         )
+
+    def get_representation(self, x):
+        return self.base_encoder(x)
     
     def forward(self, x):
         batch_size = x.size(0)
