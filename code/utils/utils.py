@@ -107,6 +107,7 @@ def plot_tsne_representation(classifier, n_points=500, n_components=2, perplexit
 
     fig = plt.figure(figsize=(8, 8))
     x_tsne = TSNE(n_components, perplexity=perplexity).fit_transform(latent_X)
+    colors = cm.rainbow(np.linspace(0, 1, n_neighbors))
 
     if n_components == 2:
         ax = fig.add_subplot(1, 1, 1)
@@ -118,7 +119,6 @@ def plot_tsne_representation(classifier, n_points=500, n_components=2, perplexit
         ax.set_title("2D t-SNE of the embedded images")
     else:
         ax = fig.add_subplot(1, 1, 1, projection='3d')
-        colors = cm.rainbow(np.linspace(0, 1, n_neighbors))
         for l in range(n_neighbors):
             ax.scatter(
                 x_tsne[labels == l, 0], x_tsne[labels == l, 1], x_tsne[labels == l, 2],
