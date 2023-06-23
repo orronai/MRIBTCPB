@@ -260,3 +260,4 @@ def train_classifier(Byol, batch_size, num_patches, optimizer, scheduler, lr, fi
     )
     cm_display.plot(cmap=plt.cm.Blues, values_format='.3f')
     plt.show()
+    return classifier
