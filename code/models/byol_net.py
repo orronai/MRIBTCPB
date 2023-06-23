@@ -31,7 +31,7 @@ class ByolNet:
     def train_byol(self, device, train_loader, epochs=20, use_amp=True):
         scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
         opt = torch.optim.Adam(self.learner.parameters(), lr=3e-4)
-        scheduler = StepLR(opt, 20, 0.1, verbose=True)
+        scheduler = StepLR(opt, 15, 0.1, verbose=True)
         self.model.to(device)
         self.learner.to(device)
         for epoch in range(epochs):
