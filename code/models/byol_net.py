@@ -2,7 +2,9 @@ import numpy as np
 import torch
 import torch.quantization
 import torch.nn as nn
-from torchvision.models import resnet50, ResNet50_Weights
+from torchvision.models import (
+    densenet201, resnet50, DenseNet201_Weights, ResNet50_Weights,
+)
 from torch.optim.lr_scheduler import StepLR
 from tqdm import tqdm
 
@@ -16,6 +18,9 @@ class ByolNet:
         if model_name == 'resnet50':
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
             self.model.name = 'ResNet'
+        elif model_name == 'densenet201':
+            self.model = densenet201(weights=DenseNet201_Weights.DEFAULT)
+            self.model.name = 'DenseNet'
         else:
             raise NameError('No Model Found')
 
@@ -66,7 +71,10 @@ class ClassifierByolNet(nn.Module):
             for param in self.base_encoder.parameters():
                 param.requires_grad = False
 
-        in_channels = base_encoder.fc.in_features
+        if base_encoder.name == 'ResNet':
+            in_channels = base_encoder.fc.in_features
+        elif base_encoder.name == 'DenseNet':
+            in_channels = base_encoder.classifier.in_features
 
         self.linear_classifier = nn.Sequential(
             nn.BatchNorm1d(in_channels * self.num_patches, affine=False),
