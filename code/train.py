@@ -159,7 +159,7 @@ def train_model(model_name, augmentation, optimizer, scheduler, batch_size, lr, 
     plt.show()
 
 # BYOL Train.
-def train_byol(model, batch_size, epochs=30):
+def train_byol(model, batch_size, epochs=30, hidden_layer='avgpool'):
     # Load the training and validation datasets.
     dataset_train, dataset_valid, dataset_test, dataset_classes = get_datasets()
     print(f"[INFO]: Number of training images: {len(dataset_train)}")
@@ -189,7 +189,10 @@ def train_byol(model, batch_size, epochs=30):
         K.RandomContrast(p=0.3, contrast=(0.9, 1.1)),
     )
     
-    Byol = ByolNet(model, augment_fn=augment_fn, augment_fn2=augment_fn2)
+    Byol = ByolNet(
+        model, augment_fn=augment_fn,
+        augment_fn2=augment_fn2, hidden_layer=hidden_layer,
+    )
     Byol.train_byol(device, train_loader, epochs=epochs)
     return Byol
 
