@@ -1,0 +1,10 @@
+efficientnet_pytorch==0.7.1
+kornia==0.6.8
+matplotlib==3.3.4
+numpy==1.19.5
+optuna==3.0.6
+Pillow==8.4.0
+scikit_learn==0.24.2
+torch==1.10.2
+torchvision==0.11.3
+tqdm==4.64.1
