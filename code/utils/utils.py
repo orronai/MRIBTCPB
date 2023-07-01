@@ -23,7 +23,7 @@ def save_model(epochs, model, model_name, optimizer, criterion, augmentation):
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': criterion,
-                }, f"MRIBTCPB/outputs/model_{model_name}_{aug}.pth")
+                }, f"MRIBTCPB/outputs/weights/model_{model_name}_{aug}.pth")
 
 def save_plots(model_name, train_acc, valid_acc, train_loss, valid_loss, augmentation):
     """
