@@ -27,6 +27,18 @@ images.
 ![Image of Classifier](./assets/BYOL_net.jpg)
 
 ## Results
+###  Accuracy Comparison
+<div align="center">
+  
+  |Model| Not-Augmented | Augmented|
+  |-----|-----|-----|
+  |ResNet50| 94.13%| 97.03%|
+  | DenseNet201| 97.25%| 98.47%|
+  | EfficientNet-B4| 97.86%| 99.09%|
+  | BYOL+ResNet50| -| 99.54%|
+
+</div>
+
 ### ResNet50
 The confusion matrices of the not-augmented and augmented results (from left to right):
 <p align="middle">
@@ -59,14 +71,6 @@ The confusion matrices of the augmented results:
   <img src="./outputs/'t-SNE_BYOL-2D'.png" width="40%" />
   <img src="./outputs/'t-SNE_BYOL-3D'.png" width="40%" /> 
 </p>
-
-###  Accuracy Comparison
-|Model| Not-Augmented | Augmented|
-|-----|-----|-----|
-|ResNet50| 94.13%| 97.03%|
-| DenseNet201| 97.25%| 98.47%|
-| EfficientNet-B4| 97.86%| 99.09%|
-| BYOL+ResNet50| -| 99.54%|
 
 
 ## Files In The Repository
