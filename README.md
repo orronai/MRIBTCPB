@@ -82,7 +82,7 @@ The confusion matrices of the augmented results:
 ## Installation
 1. Clone the repository
 2. Install the basic packages using the provided `environment.yml` file by running: `conda env create -f environment.yml`.
-3. Alternatively, you can install all the requiered packages with `pip install -r requierements.txt`.
+3. Alternatively, you can install all the requiered packages with `pip install -r requirements.txt`.
 
 ### Prerequisites
 |Library         | Version |
