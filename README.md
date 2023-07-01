@@ -98,7 +98,7 @@ The confusion matrices of the augmented results:
 |`numpy`| `1.19.5`|
 |`optuna`| `3.0.6`|
 |`Pillow`| `8.4.0`|
-|`scikirt_learn`| `0.24.2`|
+|`scikit_learn`| `0.24.2`|
 |`torch`| `1.10.2`|
 |`torchvision`| `0.11.3`|
 |`tqdm`| `4.64.1`|
