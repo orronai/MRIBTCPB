@@ -1,4 +1,4 @@
-<h1 align="center">MRI Brain Tumor Classification Patches Based</h1>
+<h1 align="center">MRI Brain Tumor Patch-Based Classification</h1>
 <h2 align="center">Final project for the Technion's EE Deep Learning course (046211)</h2> 
   <p align="center">
     Or Ronai: <a href="https://www.linkedin.com/in/orronai/">LinkedIn</a>, <a href="https://github.com/orronai">GitHub</a>
@@ -16,7 +16,7 @@ images.
   <img src="./assets/patches_split.gif" height="200">
 </p>
 
-### An illustration for the whole system:
+### Illustration for the whole system:
 #### PatchNet Model (transfer-learning fine-tuning using patches)
 ![Image of Patches-Model](./assets/patches_model.jpg)
 
@@ -103,7 +103,7 @@ The confusion matrices of the augmented results:
 |`torchvision`| `0.11.3`|
 |`tqdm`| `4.64.1`|
 
-### Run Our Model
+### Run The Model
 In order to train the model and choose the hyperparameters according to `Optuna` suggestion, run the following functions: `run_experiments` and `train_model`.
 
 If necessary, load the trained weights of the wanted model (`ResNet50`, `DenseNet201`, `EfficientNet-B4` or `Byol-ResNet`).
